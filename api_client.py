@@ -20,16 +20,24 @@ class SportsAPIClient:
         """
         try:
             url = f"{BASE_URL}/searchteams.php"
+
+            #Note: params={"t":name} is used to add query parameters to the url and timeout specifies the time the connection should be kept open without success status after which a connection timeout error is thrown
             response = requests.get(url, params={"t": name}, timeout=10)
+            #raises exception for any httpError that occurs
             response.raise_for_status()
+
+            #response.json parses the request response as a json object 
             data = response.json()
 
             # API returns {"teams": null} when nothing is found
-            teams = data.get("teams")
+            teams = data.get("teams") #the get method because that the data is in dictionary format
             if not teams:
+                #in concurence with the return type of the method
                 return None
 
             t = teams[0]  # Use the first result
+
+            #return the Team object defined in models.py
             return Team(
                 name=t.get("strTeam", "Unknown"),
                 team_id=t.get("idTeam", ""),
@@ -41,6 +49,7 @@ class SportsAPIClient:
             # Covers timeouts, connection errors, and malformed JSON
             return None
 
+    #returns a list of Match objects
     def get_upcoming_fixtures(self, team_id: str) -> list[Match]:
         """
         Fetch the next 5 scheduled matches for a team.
