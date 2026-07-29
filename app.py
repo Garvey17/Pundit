@@ -3,11 +3,17 @@
 # Single-page Streamlit app with tabs for fixtures, results, AI content, and trivia.
 
 import streamlit as st
+import os
 
 from api_client import SportsAPIClient
 from analyzer import MatchAnalyzer
 from storage import load_data, save_data
 from utils import clean_team_name
+
+# Bridge Streamlit Cloud secrets into environment variables,
+# so the same os.getenv() calls work both locally (.env) and on Streamlit Cloud (secrets).
+if "OPENAI_API_KEY" in st.secrets:
+    os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
